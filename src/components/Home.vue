@@ -1,7 +1,5 @@
 <template>
   <h1 class="mb-1">🐘 Inventaire annuel {{ inventoryYear }} 🐘</h1>
-  <br />
-  <v-btn prepend-icon="mdi-plus" to="/add">Ajouter un article</v-btn>
 </template>
 
 <script>
