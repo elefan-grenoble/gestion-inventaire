@@ -102,7 +102,8 @@ export default {
     // let articleList = store.rowsSheetsData[sheetName][1] // column with numbers
     // return articleList.findIndex(article => article == articleCode)
     let articleList = store.rowsSheetsData[sheetName][1]
-    return articleList.findIndex(article => article && article.startsWith(articleCode))
+    let articleCodeCleaned = parseInt(articleCode).toString()
+    return articleList.findIndex(article => article && article.startsWith(articleCodeCleaned))
   },
 
   getArticle(sheetName, articleCode) {
