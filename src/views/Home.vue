@@ -6,6 +6,12 @@
   <br />
 
 <v-btn prepend-icon="mdi-plus" to="/add">Ajouter un article</v-btn>
+
+<v-snackbar
+    v-model="addSuccessMessage"
+    color="success"
+    :timeout="2000"
+  >Article ajouté !</v-snackbar>
 </template>
 
 <script>
@@ -17,11 +23,15 @@ export default {
   data() {
     return {
       inventoryYear: import.meta.env.VITE_INVETORY_YEAR,
-      locationChoices: import.meta.env.VITE_INVENTORY_LOCATIONS.split(',')
+      // locationChoices: import.meta.env.VITE_INVENTORY_LOCATIONS.split(',')
+      addSuccessMessage: false,
     }
   },
   mounted() {
     this.initData()
+    if (this.$route.query.addSuccess === 'true') {
+      this.addSuccessMessage = true
+    }
   },
   computed: {
     ...mapStores(useAppStore),
@@ -29,8 +39,8 @@ export default {
   methods: {
     initData() {
       this.appStore.inventoryYear = this.inventoryYear
-      this.appStore.locationChoices = this.locationChoices
-      api.setGoogleSheetsData()
+      // this.appStore.locationChoices = this.locationChoices
+      api.setRowsSheetsData()
     }
   }
 }

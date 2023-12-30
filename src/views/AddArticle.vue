@@ -9,7 +9,7 @@
     <v-row>
       <v-col cols="12" md="6">
         <v-radio-group v-model="addArticleForm.location" inline hide-details="auto">
-          <v-radio v-for="location in locationChoices" :label="location" :value="location"></v-radio>
+          <v-radio v-for="location in locationChoices" :label="location.name" :value="location.name"></v-radio>
         </v-radio-group>
       </v-col>
     </v-row>
@@ -63,6 +63,12 @@
     @barcode="setArticleCode($event)"
     @close="barcodeScanner = false"
   ></BarcodeScanner>
+
+  <v-snackbar
+    v-model="addSuccessMessage"
+    color="success"
+    :timeout="2000"
+  >Article ajouté !</v-snackbar>
 </template>
 
 <script>
@@ -85,6 +91,7 @@ export default {
       locationChoices: [],  // see init
       article: null,
       barcodeScanner: false,
+      addSuccessMessage: false,
       loading: false
     }
   },
@@ -98,13 +105,18 @@ export default {
     }
   },
   methods: {
-    initAddArticleForm() {
+    initAddArticleForm(withSuccessMessage=false) {
       this.locationChoices = this.appStore.locationChoices
-      this.addArticleForm.location = this.appStore.lastLocationUsed || this.locationChoices[0]
+      this.addArticleForm.location = this.appStore.lastLocationUsed || this.locationChoices[0]['name']
+      this.addArticleForm.code = null
+      this.addArticleForm.quantity = 0
       this.article = null
-      // setTimeout(() => {
-      //   this.setArticleCode('37700191630785')
-      // }, 50)
+      if (withSuccessMessage) {
+        this.addSuccessMessage = true
+      }
+      setTimeout(() => {
+        this.setArticleCode('3770019163078')
+      }, 50)
     },
     showBarcodeScanner() {
       this.barcodeScanner = true
@@ -115,10 +127,10 @@ export default {
       this.article = api.getArticle(this.addArticleForm.location, code)
     },
     addArticle() {
-      console.log(this.addArticleForm)
-      api.updateGoogleSheetsData(this.addArticleForm.location, this.addArticleForm)
+      api.updateRowsSheetsData(this.addArticleForm.location, this.addArticleForm)
       .then((data) => {
-        this.$router.push({ path: '/', query: { addSuccess: 'true' } })
+        // this.$router.push({ path: '/', query: { addSuccess: 'true' } })
+        this.initAddArticleForm(true)
       })
     }
   }
