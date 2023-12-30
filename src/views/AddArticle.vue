@@ -14,15 +14,31 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="12" md="9">
+      <v-col cols="12" sm="6">
         <v-text-field
           v-model="addArticleForm.code"
           label="Code barre de l'article"
           type="text"
           :prepend-inner-icon="addArticleForm.code ? 'mdi-barcode' : 'mdi-barcode-scan'"
           @click:prependInner="showBarcodeScanner"
+          @update:modelValue="setArticleCode"
         ></v-text-field>
       </v-col>
+      <v-col cols="12" sm="6">
+        <v-card v-if="article">
+          <v-card-title>{{ article['Désignation'] }}</v-card-title>
+          <v-card-subtitle>{{ article['NomFournisseur'] }}</v-card-subtitle>
+          <v-card-text>
+            <p v-for="key in ['Poids', 'Nom Rayon', 'Nom Emplacement / sous-sol']">{{ key }} : {{ article[key] }}</p>
+          </v-card-text>
+        </v-card>
+        <v-card v-if="!article">
+          <v-card-text v-if="!addArticleForm.code">Scanner un article</v-card-text>
+          <v-card-text v-if="addArticleForm.code">Pas trouvé...</v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row>
       <v-col cols="12" md="3">
         <v-text-field
           v-model="addArticleForm.quantity"
@@ -50,6 +66,9 @@
 </template>
 
 <script>
+import { mapStores } from 'pinia'
+import { useAppStore } from '../store/app'
+import api from '../services/api'
 import BarcodeScanner from '../components/BarcodeScanner.vue'
 
 export default {
@@ -63,7 +82,8 @@ export default {
         code: null,
         quantity: 0
       },
-      locationChoices: import.meta.env.VITE_INVENTORY_LOCATIONS.split(','),
+      locationChoices: [],  // see init
+      article: null,
       barcodeScanner: false,
       loading: false
     }
@@ -72,23 +92,34 @@ export default {
     this.initAddArticleForm()
   },
   computed: {
+    ...mapStores(useAppStore),
     formFilled() {
       return this.addArticleForm.location && this.addArticleForm.code
     }
   },
   methods: {
     initAddArticleForm() {
-      this.addArticleForm.location = import.meta.env.VITE_INVENTORY_LOCATIONS.split(',')[0]
+      this.locationChoices = this.appStore.locationChoices
+      this.addArticleForm.location = this.appStore.lastLocationUsed || this.locationChoices[0]
+      this.article = null
+      // setTimeout(() => {
+      //   this.setArticleCode('37700191630785')
+      // }, 50)
     },
     showBarcodeScanner() {
       this.barcodeScanner = true
     },
     setArticleCode(code) {
       this.addArticleForm.code = code
+      this.article = null
+      this.article = api.getArticle(this.addArticleForm.location, code)
     },
     addArticle() {
       console.log(this.addArticleForm)
-      this.$router.push({ path: '/', query: { addSuccess: 'true' } })
+      api.updateGoogleSheetsData(this.addArticleForm.location, this.addArticleForm)
+      .then((data) => {
+        this.$router.push({ path: '/', query: { addSuccess: 'true' } })
+      })
     }
   }
 }
