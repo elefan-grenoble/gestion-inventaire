@@ -1,5 +1,5 @@
 <template>
-  <h1 class="mb-1">Ajouter un article</h1>
+  <h2 class="mb-1">Ajouter un article</h2>
 
   <v-divider></v-divider>
 
@@ -114,9 +114,9 @@ export default {
       if (withSuccessMessage) {
         this.addSuccessMessage = true
       }
-      setTimeout(() => {
-        this.setArticleCode('3770019163078')
-      }, 50)
+      // setTimeout(() => {
+      //   this.setArticleCode('3770019163078')
+      // }, 50)
     },
     showBarcodeScanner() {
       this.barcodeScanner = true

@@ -124,7 +124,7 @@ export default {
     
     const articleIndex = this.getRowsSheetsArticleIndex(sheetName, articleData.code)
     const location = store.locationChoices.find(l => l.name == sheetName)
-    const range = `${WRITE_COLUMN_LETTER}${articleIndex}:${WRITE_COLUMN_LETTER}${articleIndex}`
+    const range = `${WRITE_COLUMN_LETTER}${articleIndex+1}:${WRITE_COLUMN_LETTER}${articleIndex+1}`
 
     const data = {
       'cells': [
