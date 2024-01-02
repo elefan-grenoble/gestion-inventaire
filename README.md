@@ -21,7 +21,10 @@ L'idée derrière `gestion-inventaire` est d'accélérer l'étape de remplissage
 
 ## Captures d'écran
 
-![image](https://raw.githubusercontent.com/elefan-grenoble/gestion-inventaire/main/public/images/add-article.png)
+|Page|Image|
+|---|---|
+|Ajout article avec code barre unique|![image](https://raw.githubusercontent.com/elefan-grenoble/gestion-inventaire/main/public/images/add-article.png)|
+|Ajout article avec code barre partiel|![image](https://raw.githubusercontent.com/elefan-grenoble/gestion-inventaire/main/public/images/add-article-multiple.png)|
 
 ## Développement
 
