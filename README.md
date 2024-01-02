@@ -1,69 +1,38 @@
-# essentials
+# Gestion inventaire
 
-## Project setup
+Petit outil pour tenter d'accélérer l'inventaire.
 
-```
-# yarn
-yarn
+## Contexte
 
-# npm
-npm install
+A l'Elefan Grenoble nous utilisons le logiciel [Kaso](https://www.kaso-soft.com/) pour la gestion du stock et de la caisse.
 
-# pnpm
-pnpm install
+Nous faisons régulièrement des inventaires partiels pour mettre à jour nos stocks. Et un inventaie annuel à la fin de l'année.
 
-# bun
-bun install
-```
+Mais cette procédure est chronophage :
+* exporter le tableur depuis Kaso
+* remplir le tableur, avec pour chaque produit 2 informations à fournir : le stock en magasin, et le stock en réserve (la somme de ces 2 chiffres sera ensuite effectuée)
+* réinjecter le tableur dans Kaso (effectuer des vérifications sur les gros écarts avec le stock théorique)
 
-### Compiles and hot-reloads for development
+## Idée
 
-```
-# yarn
-yarn dev
+L'idée derrière `gestion-inventaire` est d'accélérer l'étape de remplissage du tableur :
+* partager en ligne le tableur (grâce à Google Sheet ou rows.com ou autre ?) pour permettre la collaboration (edition simultanée)
+* avoir un interface de saisie intutitve : scan du code barre et indiquer la quantité
 
-# npm
-npm run dev
+## Captures d'écran
 
-# pnpm
-pnpm dev
+![image](https://raw.githubusercontent.com/elefan-grenoble/gestion-inventaire/main/public/images/add-article.png)
 
-# bun
-bun run dev
-```
+## Développement
 
-### Compiles and minifies for production
+### Stack technique
 
-```
-# yarn
-yarn build
+* Vue.js 3
 
-# npm
-npm run build
+### Installation
 
-# pnpm
-pnpm build
+`yarn install`
 
-# bun
-bun run build
-```
+### Lancer le projet en local
 
-### Lints and fixes files
-
-```
-# yarn
-yarn lint
-
-# npm
-npm run lint
-
-# pnpm
-pnpm lint
-
-# bun
-bun run lint
-```
-
-### Customize configuration
-
-See [Configuration Reference](https://vitejs.dev/config/).
+`yarn dev`
