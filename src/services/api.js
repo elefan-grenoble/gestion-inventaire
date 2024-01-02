@@ -30,8 +30,8 @@ export default {
 
   getGoogleSheetsArticleIndex(sheetName, articleCode) {
     const store = useAppStore()
-    let articleList = store.googleSheetsData[sheetName][1] // column with numbers
-    return articleList.findIndex(article => article.replace == articleCode)
+    let articleList = store.googleSheetsData[sheetName][import.meta.env.VITE_ROWS_COLUMN_ARTICLE_CODE_INDEX]
+    return articleList.findIndex(article => article == articleCode)
   },
 
   getArticle(sheetName, articleCode) {
@@ -71,6 +71,9 @@ export default {
 
 
   //////////////////////////////////////////////
+  // 1) getRowsSheetsData & setRowsSheetsData
+  // 2) user starts typing a code (or scans) : getArticleListByCode
+  // 3) user found corresponding article (1 matching code) : getRowsSheetsArticleIndex & updateRowsSheetsData
 
   getRowsSheetsData(tableId) {
     const store = useAppStore()
@@ -95,28 +98,39 @@ export default {
     })
   },
 
-  getRowsSheetsArticleIndex(sheetName, articleCode) {
+  getRowsSheetsArticleCodeMatched(sheetName, articleCode) {
     const store = useAppStore()
-    // let articleList = store.rowsSheetsData[sheetName][0]
-    // return articleList.findIndex(article => article.replace(',','') == articleCode)
-    // let articleList = store.rowsSheetsData[sheetName][1] // column with numbers
-    // return articleList.findIndex(article => article == articleCode)
-    let articleList = store.rowsSheetsData[sheetName][1]
-    let articleCodeCleaned = parseInt(articleCode).toString()
-    return articleList.findIndex(article => article && article.startsWith(articleCodeCleaned))
+    let articleCodeList = store.rowsSheetsData[sheetName][import.meta.env.VITE_ROWS_COLUMN_ARTICLE_CODE_INDEX]
+    let articleCodeCleaned = parseInt(articleCode).toString()  // remove 0 padding
+    return articleCodeList.filter(article => article && article.startsWith(articleCodeCleaned))
   },
 
-  getArticle(sheetName, articleCode) {
+  getRowsSheetsArticleIndex(sheetName, articleCode) {
     const store = useAppStore()
-    const articleIndex = this.getRowsSheetsArticleIndex(sheetName, articleCode)
-    if (articleIndex > -1) {
-      let articleData = {}
-      store.rowsSheetsData[sheetName].forEach(column => {
-        articleData[column[0]] = column[articleIndex]
-      })
-      return articleData
-    }
-    return null
+    let articleList = store.rowsSheetsData[sheetName][import.meta.env.VITE_ROWS_COLUMN_ARTICLE_CODE_INDEX]
+    let articleCodeCleaned = parseInt(articleCode).toString()  // remove 0 padding
+    return articleList.findIndex(article => article && article.startsWith(articleCodeCleaned))  // article.replace(',','')
+  },
+
+  getArticleObjectFromIndex(sheetName, articleIndex) {
+    const store = useAppStore()
+    let articleData = {}
+    store.rowsSheetsData[sheetName].forEach(column => {
+      articleData[column[0]] = column[articleIndex]
+    })
+    return articleData
+  },
+
+  getArticleListByCode(sheetName, articleCode) {
+    const articleCodeMatched = this.getRowsSheetsArticleCodeMatched(sheetName, articleCode)
+    let articleObjectList = []
+    articleCodeMatched.forEach((articleCode) => {
+      const articleIndex = this.getRowsSheetsArticleIndex(sheetName, articleCode)
+      if (articleIndex > -1) {
+        articleObjectList.push(this.getArticleObjectFromIndex(sheetName, articleIndex))
+      }
+    })
+    return articleObjectList
   },
 
   updateRowsSheetsData(sheetName, articleData) {

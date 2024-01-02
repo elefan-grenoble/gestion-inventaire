@@ -5,8 +5,10 @@
 
   <br />
 
-<v-btn class="mr-2 mb-2" color="primary" prepend-icon="mdi-plus" to="/add">Ajouter un article</v-btn>
-<v-btn prepend-icon="mdi-google-spreadsheet" :href="rowsURL" target="_blank">Tableur partagé</v-btn>
+<v-btn color="primary" prepend-icon="mdi-plus" to="/add">Ajouter un article</v-btn>
+<br />
+<br />
+<v-btn prepend-icon="mdi-google-spreadsheet" append-icon="mdi-open-in-new" :href="rowsURL" target="_blank">Tableur partagé</v-btn>
 
 <v-snackbar
     v-model="addSuccessMessage"

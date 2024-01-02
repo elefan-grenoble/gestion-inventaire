@@ -6,6 +6,7 @@
   <br />
 
   <v-form @submit.prevent="addArticle">
+    <h3>Emplacement</h3>
     <v-row>
       <v-col cols="12" md="6">
         <v-radio-group v-model="addArticleForm.location" inline hide-details="auto">
@@ -13,33 +14,48 @@
         </v-radio-group>
       </v-col>
     </v-row>
+
+    <br />
+    <h3>Article</h3>
     <v-row>
-      <v-col cols="12" sm="6">
+      <v-col cols="12" md="6">
         <v-text-field
           v-model="addArticleForm.code"
           label="Code barre de l'article"
           type="text"
           :prepend-inner-icon="addArticleForm.code ? 'mdi-barcode' : 'mdi-barcode-scan'"
+          hide-details="auto"
           @click:prependInner="showBarcodeScanner"
           @update:modelValue="setArticleCode"
         ></v-text-field>
       </v-col>
-      <v-col cols="12" sm="6">
-        <v-card v-if="article">
-          <v-card-title>{{ article['Désignation'] }}</v-card-title>
-          <v-card-subtitle>{{ article['NomFournisseur'] }}</v-card-subtitle>
+      <v-col cols="12" md="6">
+        <v-card v-if="articleListFound && articleListFound.length == 1">
+          <v-card-title>{{ articleListFound[0]['Désignation'] }}</v-card-title>
+          <v-card-subtitle>{{ articleListFound[0]['NomFournisseur'] }}</v-card-subtitle>
           <v-card-text>
-            <p v-for="key in ['Poids', 'Nom Rayon', 'Nom Emplacement / sous-sol']">{{ key }} : {{ article[key] }}</p>
+            <p v-for="key in ['C.Article', 'Poids', 'Nom Rayon', 'Nom Emplacement / sous-sol']">{{ key }} : {{ articleListFound[0][key] }}</p>
           </v-card-text>
         </v-card>
-        <v-card v-if="!article">
-          <v-card-text v-if="!addArticleForm.code">Scanner un article</v-card-text>
+        <v-card v-if="articleListFound && articleListFound.length > 1">
+          <v-card-text>Plusieurs articles trouvés ({{ articleListFound.length }}) dont le code barre commence par <strong>{{ addArticleForm.code }}</strong></v-card-text>
+          <v-list>
+            <v-list-item v-for="article in articleListFound">
+              <strong>{{ article['Désignation'] }}</strong> <span>({{ article['C.Article'] }})</span>
+            </v-list-item>
+          </v-list>
+        </v-card>
+        <v-card v-if="!articleListFound">
+          <v-card-text v-if="!addArticleForm.code">Scannez un article en cliquant sur <v-icon icon="mdi-barcode-scan"></v-icon></v-card-text>
           <v-card-text v-if="addArticleForm.code">Pas trouvé...</v-card-text>
         </v-card>
       </v-col>
     </v-row>
+
+    <br />
+    <h3>Quantité</h3>
     <v-row>
-      <v-col cols="12" md="3">
+      <v-col cols="12" md="6">
         <v-text-field
           v-model="addArticleForm.quantity"
           label="Quantité en stock"
@@ -53,7 +69,7 @@
       class="mt-2"
       :color="formFilled ? 'primary' : 'default'"
       :loading="loading"
-      :disabled="!formFilled"
+      :disabled="!formFilled || articleListFound.length > 1"
     >Ajouter</v-btn>
   </v-form>
 
@@ -89,7 +105,7 @@ export default {
         quantity: 0
       },
       locationChoices: [],  // see init
-      article: null,
+      articleListFound: [],
       barcodeScanner: false,
       addSuccessMessage: false,
       loading: false
@@ -110,7 +126,7 @@ export default {
       this.addArticleForm.location = this.appStore.lastLocationUsed || this.locationChoices[0]['name']
       this.addArticleForm.code = null
       this.addArticleForm.quantity = 0
-      this.article = null
+      this.articleListFound = null
       if (withSuccessMessage) {
         this.addSuccessMessage = true
       }
@@ -123,8 +139,7 @@ export default {
     },
     setArticleCode(code) {
       this.addArticleForm.code = code
-      this.article = null
-      this.article = api.getArticle(this.addArticleForm.location, code)
+      this.articleListFound = api.getArticleListByCode(this.addArticleForm.location, code)
     },
     addArticle() {
       api.updateRowsSheetsData(this.addArticleForm.location, this.addArticleForm)
